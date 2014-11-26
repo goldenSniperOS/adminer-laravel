@@ -332,7 +332,62 @@ Route::post('consola',function(){
 				return Response::json( array('message' => "Se insertaron los valores a la tabla <b>".trim($nombres[1]).'</b>','type' => 'text-success'));
 			}
 			return Response::json( array('message' => "Hubo un error al insertar los valores a la tabla <b>".$nombres[1].'</b>','type' => 'text-danger'));
-			
+		}
+
+	}
+
+	if ($data[0] == 'seleccionar' || $data[0] == 'SELECCIONAR'){
+		$nombres = explode('.',$data[1]);
+		$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
+		if ($conn) {
+			$columns = explode('[', $val);
+			$data = explode("]", $columns[1]);
+			$data[0] = str_replace(" ", "", $data[0]);
+			$col = explode(',', $data[0]);
+			$sql = "SELECT ";
+			for ($i=0; $i < count($col); $i++) { 
+				if ($col[$i] == "") {
+					unset($col[$i]);
+				}
+	    	}
+	    	for ($i=0; $i < count($col); $i++) { 
+	    		$sql.= $col[$i];
+	    		if ($i < count($col)-1) {
+	    			$sql.=',';
+	    		}
+	    	}
+	    	$sql .= ' FROM '.$nombres[1].' WHERE ';
+	    	$where = explode('donde', $val);
+	    	if (!isset($where[1])) {
+	    		$where = explode('DONDE', $val);
+	    	}
+	    	$where[1] = trim($where[1]);
+	    	$value = explode(' ', $where[1]);
+	    	for ($i=0; $i < count($value); $i++) { 
+				if ($value[$i] == "") {
+					unset($value[$i]);
+				}
+	    	}
+	    	$sql .= $value[0].$value[1].$value[2];
+			if ($resultado = mysqli_query($conn,$sql)) {
+				 $tableList = '<table class="table"><tr>';
+				for ($i=0; $i < count($col); $i++) { 
+					$tableList.= '<th>'.$col[$i].'</th>';
+				}
+				$tableList .= '</tr>';
+				 while($cRow = mysqli_fetch_array($resultado))
+				{
+					$tableList.= '<tr>'; 
+					for ($i=0; $i < count($col); $i++) { 
+						$tableList .='<td>'.$cRow[$i].'</td>';
+					}
+					$tableList.='</tr>';
+				
+				}
+				$tableList.='</table>';
+				return Response::json( array('message' => $tableList,'type' => 'text-info'));
+			}
+			return Response::json( array('message' => 'Hubo un error al insertar los valores a la tabla <b></b>','type' => 'text-danger'));
 		}
 
 	}

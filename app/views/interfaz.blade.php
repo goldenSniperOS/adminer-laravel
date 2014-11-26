@@ -18,7 +18,7 @@
 			</a>
 		</p>
 		<ul class="shell-body">
-		  
+		
 		</ul>
 		<textarea id="command"  name="command" class="form-control" style="resize:none;"></textarea>
 	<button id="send"  class="btn btn-info form-control">Enviar Comando</button>

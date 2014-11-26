@@ -46,7 +46,7 @@ body{
   list-style: none;
   background: #141414;
   font: 1em 'Andale Mono', Consolas, 'Courier New';
-  line-height: 1.6em;
+  /*line-height: 1.6em;*/
   overflow-x:hidden;
   overflow-y:auto;
   -webkit-border-bottom-right-radius: 3px;
