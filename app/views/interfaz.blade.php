@@ -37,6 +37,15 @@
 	myCodeMirror.setSize(800, 60);
 	var dia = new Date();
 	$("#infos").append(dia);
+	var last_command;
+	$(document).keyup(function (event) {
+	
+        if (event.keyCode == 37) {
+        	if (last_command != "") {
+        		myCodeMirror.setValue(last_command);
+        	};
+        }
+    });
 	$('#command').keydown(function(e){
 		var command = $('#command').val();
 		var etapa = 0 ;
@@ -62,6 +71,7 @@
 	$('#send').click(function() {    
 	    	var command = myCodeMirror.getValue();
 	    	myCodeMirror.setValue("");
+	    	last_command = command;
         	$('#command').val("");
 			$(".shell-body").append("<li style ='color: #45D40C;''>"+command+"</li>");
 			
@@ -78,7 +88,7 @@
 	    				if (data.message != undefined) {
 	    					$(".shell-body").append("<li class='text-danger'>"+data.message+"</li>");
 	    				}else{
-	    					$(".shell-body").append("<li class='text-danger'>Ocurrio un error</li>");
+	    					$(".shell-body").append("<li class='text-danger'>"+data.responseText+"</li>");
 	    				};
 	    			}
 	    		});
