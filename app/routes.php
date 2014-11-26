@@ -211,5 +211,52 @@ Route::post('consola',function(){
 
 		}
 	}
+
+	if ($data[0] == 'ver' || $data[0] == 'VER') {
+		if (isset($data[1])) {
+			$data[1] = trim($data[1]);
+			switch ($data[1]) {
+				case 'BASEDATOS':
+				case 'basedatos':
+					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'));
+					if ($conn) {
+					    $sql = "SHOW DATABASES";
+						if ($resultado = mysqli_query($conn,$sql)) {
+							 $tableList = '<ul>';
+							 while($cRow = mysqli_fetch_array($resultado))
+							  {
+							  	if (($cRow[0]!="information_schema") && ($cRow[0]!="mysql")) {
+								    $tableList.= '<li>'.$cRow[0].'</li>';
+								}
+							  }
+							  $tableList.='</ul>';
+							return Response::json(array('message' => $tableList,'type' => 'text-info'));
+						}
+					}
+					break;
+				case 'TABLAS':
+				case 'tablas':
+					$data[2] = trim($data[2]);
+					$nombres = explode('.',$data[2]);
+ 					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
+					if ($conn) {
+					    $sql = "SHOW TABLES";
+						if ($resultado = mysqli_query($conn,$sql)) {
+							 $tableList = '<ul>';
+							 while($cRow = mysqli_fetch_array($resultado))
+							  {
+							  	
+								    $tableList.= '<li>'.$cRow[0].'</li>';
+								
+							  }
+							  $tableList.='</ul>';
+							return Response::json(array('message' => $tableList,'type' => 'text-info'));
+						}
+					}
+				break;
+			}
+		}
+		return Response::json(array('message' => 'Especifique que desea <b>VER	</b>','type' => 'text-danger'));
+	}
 	return Response::json(array('message' => 'El comando ingresado no es valido','type' => 'text-danger'));
 });

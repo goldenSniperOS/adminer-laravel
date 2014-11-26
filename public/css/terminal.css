@@ -57,14 +57,14 @@ body{
   border-bottom-left-radius: 3px;
 }
  
-.shell-body li:before {
+.shell-body > li:before {
   content: '$';
   position: absolute;
   left: 0;
   top: 0;
 }
  
-.shell-body li {
+.shell-body > li {
   word-wrap: break-word;
   position: relative;
   padding: 0 0 0 15px;

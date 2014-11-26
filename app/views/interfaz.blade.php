@@ -34,8 +34,8 @@
 	$(".shell-body").append("<li class='text-info'>Conectado a {{Session::get('user')}}&#64;{{Session::get('server')}}</li>");
 	var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("command"), {
 	    lineNumbers: true,
-    styleActiveLine: true,
-    matchBrackets: true,
+    lineWrapping: true,
+    autofocus: true,
 	    mode: "sql",
 	    theme: 'twilight'
   	});
@@ -74,10 +74,15 @@
 	});
 	$('#send').click(function() {    
     	var command = myCodeMirror.getValue().trim();
+    	if (command == 'limpiar' || command == 'LIMPIAR') {
+    		$(".shell-body").empty();
+    		command = "";
+    		myCodeMirror.setValue("");
+    	};
+
     	if (command != "") {
 	    	myCodeMirror.setValue("");
 	    	last_command = command;
-	    	$('#command').val("");
 			$(".shell-body").append("<li id='"+lines+"' style ='color: #45D40C;'>"+command+"</li>");
 			lines++;
 				$.ajax({
@@ -87,36 +92,29 @@
 				data:{command:command},
 				beforeSend:function(){
 					$(".shell-body").append("<li id='"+lines+"' class='text-info'>Cargando...</li>");
-					console.log(lines);
 				},
 				success:function(data){
-					console.log(lines);
-					
-					$("#"+lines).html(data.message);
-					$("#"+lines).removeAttr('class');
-					$("#"+lines).attr('class', '');
-					$('#'+lines).addClass(data.type);
-					lines++;
-				},
-				error:function(data){
 					console.log(data);
 					if (data.message != undefined) {
 						$("#"+lines).html(data.message);
 						$("#"+lines).removeAttr('class');
 						$("#"+lines).attr('class', '');
-						$("#"+lines).addClass('text-danger');
-					}else{
-						$("#"+lines).html('Ocurrio un error');
-						$("#"+lines).removeAttr('class');
-						$("#"+lines).attr('class', '');
-						$("#"+lines).addClass('text-danger');
-					};
+						$('#'+lines).addClass(data.type);
+						lines++;
+					}
+				},
+				error:function(data){
+					console.log(data);
+					$("#"+lines).html('Ocurrio un error');
+					$("#"+lines).removeAttr('class');
+					$("#"+lines).attr('class', '');
+					$("#"+lines).addClass('text-danger');
 					lines++;
 				}
 			});
 			$('.shell-body').animate({scrollTop: $('.shell-body').prop("scrollHeight")}, 500);
-			
 		};
+		
 	});
 	
 	</script>
