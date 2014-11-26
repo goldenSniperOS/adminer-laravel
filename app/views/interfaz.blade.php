@@ -11,16 +11,17 @@
 
 @section('principal')
 
-
-		<a href="/cerrar" class="btn btn-info center-block">Cambiar de conexion</a>
-		<div class="shell-wrap">
-			<p class="shell-top-bar">Ventana de Comandos</p>
-			<ul class="shell-body">
-			  
-			</ul>
-			<textarea id="command"  name="command" class="form-control" style="resize:none;"></textarea>
-		<button id="send"  class="btn btn-danger form-control">Enviar Comando</button>
-		</div>
+	<div class="shell-wrap">
+		<p class="shell-top-bar">Ventana de Comandos 
+			<a href="/cerrar" class="btn btn-xs btn-danger pull-right"><i class="glyphicon glyphicon-remove"></i>
+			</a>
+		</p>
+		<ul class="shell-body">
+		  
+		</ul>
+		<textarea id="command"  name="command" class="form-control" style="resize:none;"></textarea>
+	<button id="send"  class="btn btn-danger form-control">Enviar Comando</button>
+	</div>
 @stop	
 
 @section('scripts')
@@ -37,7 +38,7 @@
 	myCodeMirror.setSize(800, 60);
 	var dia = new Date();
 	$("#infos").append(dia);
-	var last_command;
+	var last_command,lines=0;
 	$(document).keyup(function (event) {
 	
         if (event.keyCode == 37) {
@@ -73,26 +74,27 @@
 	    	myCodeMirror.setValue("");
 	    	last_command = command;
         	$('#command').val("");
-			$(".shell-body").append("<li style ='color: #45D40C;''>"+command+"</li>");
+			$(".shell-body").append("<li id='"+lines+"' style ='color: #45D40C;''>"+command+"</li>");
 			
-					$.ajax({
-	    			url: 'consola',
-	    			method:'POST',
-	    			data:{command:command},
-	    			success:function(data){
-	    				console.log(data);
-	    				$(".shell-body").append(data.message);
-	    			},
-	    			error:function(data){
-	    				console.log(data);
-	    				if (data.message != undefined) {
-	    					$(".shell-body").append("<li class='text-danger'>"+data.message+"</li>");
-	    				}else{
-	    					$(".shell-body").append("<li class='text-danger'>"+data.responseText+"</li>");
-	    				};
-	    			}
-	    		});
-			
+				$.ajax({
+    			url: 'consola',
+    			method:'POST',
+    			data:{command:command},
+    			success:function(data){
+    				console.log(data);
+    				$(".shell-body").append('<span class="'+data.type+'">'+data.message+'</span>');
+    			},
+    			error:function(data){
+    				console.log(data);
+    				if (data.message != undefined) {
+    					$(".shell-body").append("<li id='"+lines+"' class='text-danger'>"+data.message+"</li>");
+    				}else{
+    					$(".shell-body").append("<li id='"+lines+"' class='text-danger'>Ocurrio un error inesperado</li>");
+    				};
+    			}
+    		});
+			$('.shell-body').animate({scrollTop: $('.shell-body').prop("scrollHeight")}, 500);
+			lines++;
 	});
 	
 	</script>

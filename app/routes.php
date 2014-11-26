@@ -140,17 +140,17 @@ Route::post('consola',function(){
 					{
 						$sql = "ALTER TABLE ".$nombres[1]." ADD ".$data[5]." ".$tiposcastellano[strtoupper($data[6])]." NOT NULL";
 						if (mysqli_query($conn,$sql)) {
-							return Response::json( array('message' => 'Se inserto la columna <b>'.trim($data[5]).'</b>'));
+							return Response::json( array('message' => 'Se inserto la columna <b>'.trim($data[5]).'</b>','type' => 'text-success'));
 						}
-						return Response::json( array('message' => 'Hubo un error al insertar la columna a la base de datos <b>'.$nombres[1].'</b>'));
+						return Response::json( array('message' => 'Hubo un error al insertar la columna a la base de datos <b>'.$nombres[1].'</b>','type' => 'text-danger'));
 					}
 					elseif ($data[3]=='ELIMINAR' || $data[3]=='eliminar') 
 					{
 						$sql = "ALTER TABLE ".$nombres[1]." DROP ".$data[5];
 						if (mysqli_query($conn,$sql)) {
-							return Response::json( array('message' => 'Se elimino la columna <b>'.trim($data[5]).'</b>'));
+							return Response::json( array('message' => 'Se elimino la columna <b>'.trim($data[5]).'</b>','type' => 'text-success'));
 						}
-						return Response::json( array('message' => 'Hubo un error al eliminar la columna a la base de datos <b>'.$nombres[1].'</b>'));				
+						return Response::json( array('message' => 'Hubo un error al eliminar la columna a la base de datos <b>'.$nombres[1].'</b>','type' => 'text-danger'));				
 					}			
 				}
 
@@ -174,7 +174,7 @@ Route::post('consola',function(){
 					if (mysqli_query($conn,$sql)) {
 						return Response::json( array('message' => 'Se Elimino la Tabla <b>'.trim($nombres[1]).'</b>'));
 					}else{
-						return Response::json( array('message' => 'Hubo un error al eliminar la tabla de la base de datos <b>'.$nombres[0].'</b>'));
+						return Response::json( array('message' => 'Hubo un error al eliminar la tabla de la base de datos <b>'.$nombres[0].'</b>','type' => 'text-danger'));
 					}
 				}
 				mysqli_close($conn);
@@ -189,7 +189,7 @@ Route::post('consola',function(){
 					if (mysqli_query($conn,$sql)) {
 						return Response::json( array('message' => 'Se Elimino la Tabla <b>'.trim($data[2]).'</b>'));
 					}else{
-						return Response::json( array('message' => 'Hubo un error al eliminar la base de datos <b>'.$data[2].'</b>'));
+						return Response::json( array('message' => 'Hubo un error al eliminar la base de datos <b>'.$data[2].'</b>','type' => 'text-danger'));
 					}
 				}else{
 						return Response::json( array('message' => 'NO existe la base de datos <b>'.$data[2].'</b>'));
@@ -200,5 +200,5 @@ Route::post('consola',function(){
 
 		}
 	}
-
+	return Response::json(array('message' => 'El comando ingresado no es valido','type' => 'text-danger'));
 });
