@@ -28,6 +28,10 @@
 	{{HTML::script("js/codemirror-4.8/lib/codemirror.js")}}
 	{{HTML::script("js/codemirror-4.8/mode/javascript/javascript.js")}}
 	<script>
+	var dia = new Date();
+	$("#infos").append(dia);
+	var last_command,lines=1;
+	$(".shell-body").append("<li class='text-info'>Conectado a {{Session::get('user')}}&#64;{{Session::get('server')}}</li>");
 	var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("command"), {
 	    lineNumbers: true,
     styleActiveLine: true,
@@ -36,9 +40,7 @@
 	    theme: 'twilight'
   	});
 	myCodeMirror.setSize(800, 60);
-	var dia = new Date();
-	$("#infos").append(dia);
-	var last_command,lines=0;
+	
 	$(document).keyup(function (event) {
 	
         if (event.keyCode == 37) {
@@ -47,6 +49,7 @@
         	};
         }
     });
+
 	$('#command').keydown(function(e){
 		var command = $('#command').val();
 		var etapa = 0 ;
@@ -70,31 +73,50 @@
 		
 	});
 	$('#send').click(function() {    
-	    	var command = myCodeMirror.getValue();
+    	var command = myCodeMirror.getValue().trim();
+    	if (command != "") {
 	    	myCodeMirror.setValue("");
 	    	last_command = command;
-        	$('#command').val("");
-			$(".shell-body").append("<li id='"+lines+"' style ='color: #45D40C;''>"+command+"</li>");
-			
-				$.ajax({
-    			url: 'consola',
-    			method:'POST',
-    			data:{command:command},
-    			success:function(data){
-    				console.log(data);
-    				$(".shell-body").append('<span class="'+data.type+'">'+data.message+'</span>');
-    			},
-    			error:function(data){
-    				console.log(data);
-    				if (data.message != undefined) {
-    					$(".shell-body").append("<li id='"+lines+"' class='text-danger'>"+data.message+"</li>");
-    				}else{
-    					$(".shell-body").append("<li id='"+lines+"' class='text-danger'>Ocurrio un error inesperado</li>");
-    				};
-    			}
-    		});
-			$('.shell-body').animate({scrollTop: $('.shell-body').prop("scrollHeight")}, 500);
+	    	$('#command').val("");
+			$(".shell-body").append("<li id='"+lines+"' style ='color: #45D40C;'>"+command+"</li>");
 			lines++;
+				$.ajax({
+
+				url: 'consola',
+				method:'POST',
+				data:{command:command},
+				beforeSend:function(){
+					$(".shell-body").append("<li id='"+lines+"' class='text-info'>Cargando...</li>");
+					console.log(lines);
+				},
+				success:function(data){
+					console.log(lines);
+					
+					$("#"+lines).html(data.message);
+					$("#"+lines).removeAttr('class');
+					$("#"+lines).attr('class', '');
+					$('#'+lines).addClass(data.type);
+					lines++;
+				},
+				error:function(data){
+					console.log(data);
+					if (data.message != undefined) {
+						$("#"+lines).html(data.message);
+						$("#"+lines).removeAttr('class');
+						$("#"+lines).attr('class', '');
+						$("#"+lines).addClass('text-danger');
+					}else{
+						$("#"+lines).html('Ocurrio un error');
+						$("#"+lines).removeAttr('class');
+						$("#"+lines).attr('class', '');
+						$("#"+lines).addClass('text-danger');
+					};
+					lines++;
+				}
+			});
+			$('.shell-body').animate({scrollTop: $('.shell-body').prop("scrollHeight")}, 500);
+			
+		};
 	});
 	
 	</script>

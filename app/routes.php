@@ -61,103 +61,114 @@ Route::post('consola',function(){
 	);
 	$val = Input::get('command');
 	$data = explode( ' ', $val);
+	$data[0] = trim($data[0]);
 	//return Response::json($row);
 	if ($data[0] == 'crear' || $data[0] == 'CREAR') {
-		switch ($data[1]) {
-			case 'TABLA':
-			case 'tabla':
-				$nombres = explode('.',$data[2]);
-				$nombretabla = explode('(',$nombres[1]);
-				Session::put('database',trim($nombretabla[0]));
-				$atributos = explode('(',$val);
-				for ($i=1; $i < count($atributos); $i++) { 
-					$atributos[$i] = str_replace(")", "", $atributos[$i]);
-					$atributos[$i] = trim($atributos[$i]);
-					
-				}
-				$row = explode(",", $atributos[1]);
-				for ($i=0; $i < count($row); $i++) { 
-					$row[$i] = trim($row[$i]);
-					$separa = explode(' ', $row[$i]);
-					if ($row[$i] != "") {
-						$row[$i] = $separa[0].' '.$tiposcastellano[strtoupper($separa[1])];
+		if (isset($data[1])) {
+			$data[1] = trim($data[1]);
+			switch ($data[1]) {
+				case 'TABLA':
+				case 'tabla':
+					$nombres = explode('.',$data[2]);
+					$nombretabla = explode('(',$nombres[1]);
+					Session::put('database',trim($nombretabla[0]));
+					$atributos = explode('(',$val);
+					for ($i=1; $i < count($atributos); $i++) { 
+						$atributos[$i] = str_replace(")", "", $atributos[$i]);
+						$atributos[$i] = trim($atributos[$i]);
+						
 					}
-				}
-				$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
-				if ($conn) {
-				    $sql = "CREATE TABLE ".$nombretabla[0].' (';
-				    	for ($i=0; $i < count($row); $i++) { 
-				    		if ( $row[$i] !="") {
-				    			$sql.= $row[$i];
-					    		if ($i != count($row)-1) {
-					    			$sql.=',';
+					$row = explode(",", $atributos[1]);
+					for ($i=0; $i < count($row); $i++) { 
+						$row[$i] = trim($row[$i]);
+						$separa = explode(' ', $row[$i]);
+						if ($row[$i] != "") {
+							$row[$i] = $separa[0].' '.$tiposcastellano[strtoupper($separa[1])];
+						}
+					}
+					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
+					if ($conn) {
+					    $sql = "CREATE TABLE ".$nombretabla[0].' (';
+					    	for ($i=0; $i < count($row); $i++) { 
+					    		if ( $row[$i] !="") {
+					    			$sql.= $row[$i];
+						    		if ($i != count($row)-1) {
+						    			$sql.=',';
+						    		}
 					    		}
-				    		}
-				    		
-				    	}
-				    	$sql = $sql.');';
-					if (mysqli_query($conn,$sql)) {
-						return Response::json( array('message' => 'Se inserto la tabla <b>'.trim($nombretabla[0]).'</b> en la base de datos '.$nombres[0].' '));
+					    		
+					    	}
+					    	$sql = $sql.');';
+						if (mysqli_query($conn,$sql)) {
+							return Response::json( array('message' => 'Se inserto la tabla <b>'.trim($nombretabla[0]).'</b> en la base de datos '.$nombres[0],'type' => 'text-success'));
+						}
 					}
-				}
-				/*
-				Schema::create($nombres[1], function($table)
-				{
-					
-				});*/
-			break;
-			case 'BASEDATOS':
-			case 'basedatos':
-
-				$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'));
-				if ($conn) {
-				    $sql = "CREATE DATABASE ".$data[2];
-					if (mysqli_query($conn,$sql)) {
-						return Response::json( array('message' => "<li class='text-primary'>Se inserto la base de datos <b>".trim($data[2]).'</b></li>'));
+					/*
+					Schema::create($nombres[1], function($table)
+					{
+						
+					});*/
+				break;
+				case 'BASEDATOS':
+				case 'basedatos':
+					if(isset($data[2])){
+						$data[2] = trim($data[2]);
+						$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'));
+						if ($conn) {
+						    $sql = "CREATE DATABASE ".$data[2];
+							if (mysqli_query($conn,$sql)) {
+								return Response::json( array('message' => "Se inserto la base de datos <b>".trim($data[2]).'</b>','type' => 'text-success'));
+							}
+							return Response::json( array('message' => "Hubo un error al insertar la base de datos <b>".$data[2].'</b>','type' => 'text-danger'));
+						}
+						mysqli_close($conn);
 					}
-					return Response::json( array('message' => "<li class='text-danger'>Hubo un error al insertar la base de datos <b>".$data[2].'</b></li>'));
-				}
-				mysqli_close($conn);
-			break;
-			case 'modificar':
-			case 'MODIFICAR':
-
-			break;
+					return Response::json(array('message' => 'Especifique <b>Nombre</b> de la base de datos','type' => 'text-danger'));
+				break;
+				default:
+					return Response::json(array('message' => 'Usted solo puede <b>CREAR</b> (BASEDATOS o TABLA)','type' => 'text-danger'));
+				break;
+			}
 		}
+		return Response::json(array('message' => 'Especifique que desea <b>CREAR</b>','type' => 'text-danger'));
 	}
 
 	if($data[0] == 'modificar' || $data[0] == 'MODIFICAR')
 	{
-		switch($data[1])
-		{
-			case 'TABLA':
-			case 'tabla':
-				$nombres = explode('.',$data[2]);
-				Session::put('database',trim($nombres[0]));
-				$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),Session::get('database'));
-				if ($conn) {
-					if($data[3]=='AGREGAR' || $data[3]=='agregar')
-					{
-						$sql = "ALTER TABLE ".$nombres[1]." ADD ".$data[5]." ".$tiposcastellano[strtoupper($data[6])]." NOT NULL";
-						if (mysqli_query($conn,$sql)) {
-							return Response::json( array('message' => 'Se inserto la columna <b>'.trim($data[5]).'</b>','type' => 'text-success'));
+		if (isset($data[1])) {
+			$data[1] = trim($data[1]);
+			switch($data[1])
+			{
+				case 'TABLA':
+				case 'tabla':
+					$nombres = explode('.',$data[2]);
+					Session::put('database',trim($nombres[0]));
+					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),Session::get('database'));
+					if ($conn) {
+						if($data[3]=='AGREGAR' || $data[3]=='agregar')
+						{
+							$sql = "ALTER TABLE ".$nombres[1]." ADD ".$data[5]." ".$tiposcastellano[strtoupper($data[6])]." NOT NULL";
+							if (mysqli_query($conn,$sql)) {
+								return Response::json( array('message' => 'Se inserto la columna <b>'.trim($data[5]).'</b>','type' => 'text-success'));
+							}
+							return Response::json( array('message' => 'Hubo un error al insertar la columna a la base de datos <b>'.$nombres[1].'</b>','type' => 'text-danger'));
 						}
-						return Response::json( array('message' => 'Hubo un error al insertar la columna a la base de datos <b>'.$nombres[1].'</b>','type' => 'text-danger'));
+						elseif ($data[3]=='ELIMINAR' || $data[3]=='eliminar') 
+						{
+							$sql = "ALTER TABLE ".$nombres[1]." DROP ".$data[5];
+							if (mysqli_query($conn,$sql)) {
+								return Response::json( array('message' => 'Se elimino la columna <b>'.trim($data[5]).'</b>','type' => 'text-success'));
+							}
+							return Response::json( array('message' => 'Hubo un error al eliminar la columna a la base de datos <b>'.$nombres[1].'</b>','type' => 'text-danger'));				
+						}			
 					}
-					elseif ($data[3]=='ELIMINAR' || $data[3]=='eliminar') 
-					{
-						$sql = "ALTER TABLE ".$nombres[1]." DROP ".$data[5];
-						if (mysqli_query($conn,$sql)) {
-							return Response::json( array('message' => 'Se elimino la columna <b>'.trim($data[5]).'</b>','type' => 'text-success'));
-						}
-						return Response::json( array('message' => 'Hubo un error al eliminar la columna a la base de datos <b>'.$nombres[1].'</b>','type' => 'text-danger'));				
-					}			
-				}
 
-				mysqli_close($conn);
-			break;
+					mysqli_close($conn);
+				break;
 
+			}
 		}
+		return Response::json(array('message' => 'Especifique que desea <b>MODIFICAR</b>','type' => 'text-danger'));
 	}
 
 	if($data[0] == 'eliminar' || $data[0] == 'ELIMINAR')
@@ -172,7 +183,7 @@ Route::post('consola',function(){
 				if ($conn) {
 					$sql = "DROP TABLE ".$nombres[1];
 					if (mysqli_query($conn,$sql)) {
-						return Response::json( array('message' => 'Se Elimino la Tabla <b>'.trim($nombres[1]).'</b>'));
+						return Response::json( array('message' => 'Se Elimino la Tabla <b>'.trim($nombres[1]).'</b>','type' => 'text-success'));
 					}else{
 						return Response::json( array('message' => 'Hubo un error al eliminar la tabla de la base de datos <b>'.$nombres[0].'</b>','type' => 'text-danger'));
 					}
@@ -187,12 +198,12 @@ Route::post('consola',function(){
 				if ($conn) {
 					$sql = "DROP DATABASE ".$data[2];
 					if (mysqli_query($conn,$sql)) {
-						return Response::json( array('message' => 'Se Elimino la Tabla <b>'.trim($data[2]).'</b>'));
+						return Response::json( array('message' => 'Se Elimino la Tabla <b>'.trim($data[2]).'</b>','type' => 'text-success'));
 					}else{
 						return Response::json( array('message' => 'Hubo un error al eliminar la base de datos <b>'.$data[2].'</b>','type' => 'text-danger'));
 					}
 				}else{
-						return Response::json( array('message' => 'NO existe la base de datos <b>'.$data[2].'</b>'));
+						return Response::json( array('message' => 'NO existe la base de datos <b>'.$data[2].'</b>','type' => 'text-danger'));
 					}
 				mysqli_close($conn);
 

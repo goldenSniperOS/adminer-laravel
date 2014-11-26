@@ -69,3 +69,7 @@ body{
   position: relative;
   padding: 0 0 0 15px;
 }
+
+.CodeMirror {
+  width: auto !important;
+}
