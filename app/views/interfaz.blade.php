@@ -49,15 +49,6 @@
 	    extraKeys: {"Ctrl-Space": "autocomplete"},
         viewportMargin: Infinity
   	});
-	
-	$(document).keyup(function (event) {
-	
-        if (event.keyCode == 37) {
-        	if (last_command != "") {
-        		myCodeMirror.setValue(last_command);
-        	};
-        }
-    });
 
 	$('#command').keydown(function(e){
 		var command = $('#command').val();
@@ -92,7 +83,6 @@
 
     	if (command != "") {
 	    	myCodeMirror.setValue("");
-	    	last_command = command;
 			$(".shell-body").append("<li id='"+lines+"' style ='color: #45D40C;'>"+command+"</li>");
 			lines++;
 				$.ajax({

@@ -293,6 +293,8 @@ Route::post('consola',function(){
 			$columns = explode('(', $val);
 			$columns[1] = str_replace(")", "", $columns[1]);
 			$columns[1] = str_replace(" ", "", $columns[1]);
+			$columns[1] = str_replace("valores", "", $columns[1]);
+			$columns[1] = str_replace("VALORES", "", $columns[1]);
 			$col = explode(',', $columns[1]);
 			$sql = "INSERT INTO ".$nombres[1].' (';
 			for ($i=0; $i < count($col); $i++) { 
@@ -306,17 +308,32 @@ Route::post('consola',function(){
 	    			$sql.=',';
 	    		}
 	    	}
-	    	$sql = $sql.') VALUES (';
-	    	/*for ($i=0; $i < count($row); $i++) { 
-				$sql.= $row[$i];
-	    		if ($i < count($row)-1) {
+	    	$sql .=') VALUES (';
+	    	$values = explode('VALORES', $val);
+	    	if (!isset($values[1])) {
+	    		$values = explode('valores', $val);
+	    	}
+	    	$values[1] = str_replace("(", "", $values[1]);
+	    	$values[1] = str_replace(")", "", $values[1]);
+	    	$values[1] = trim($values[1]);
+	    	$value = explode(',', $values[1]);
+			for ($i=0; $i < count($value); $i++) { 
+				if ($value[$i] == "") {
+					unset($value[$i]);
+				}
+	    	}
+	    	for ($i=0; $i < count($value); $i++) { 
+	    		$sql.= $value[$i];
+	    		if ($i < count($value)-1) {
 	    			$sql.=',';
 	    		}
 	    	}
-	    	$sql = $sql.');';
+	    	$sql.=')';
 			if (mysqli_query($conn,$sql)) {
-			}*/
-			return Response::json($sql);
+				return Response::json( array('message' => "Se insertaron los valores a la tabla <b>".trim($nombres[1]).'</b>','type' => 'text-success'));
+			}
+			return Response::json( array('message' => "Hubo un error al insertar los valores a la tabla <b>".$nombres[1].'</b>','type' => 'text-danger'));
+			
 		}
 
 	}
