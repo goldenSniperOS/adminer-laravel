@@ -28,8 +28,7 @@ Route::post('conectar',function(){
 			Session::put('password',Input::get('password'));
 			return Response::json(array('request' => true));
 		}
-		return Response::json(array('request' => fase));
-
+		return Response::json(array('request' => false));
 	}
 
 });

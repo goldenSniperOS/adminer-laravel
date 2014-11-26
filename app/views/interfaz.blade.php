@@ -50,28 +50,6 @@
         viewportMargin: Infinity
   	});
 
-	$('#command').keydown(function(e){
-		var command = $('#command').val();
-		var etapa = 0 ;
-		
-		if(e.which == 9) {
-			key = command.substr(command.length-1,command.length);
-			switch(key){
-				case 'c':
-				case 'C': $('#command').val('CREAR ');
-				etapa = 1;
-				break;
-				case 'S':
-				case 's':$('#command').val('SELECCIONAR ');
-				etapa = 1;
-				case 'b':
-				case 'B':
-				$('#command').val(command+'BASEDEDATOS');
-				etapa = 2;
-			}
-		}
-		
-	});
 	$('#send').click(function() {    
     	var command = myCodeMirror.getValue().trim();
     	if (command == 'limpiar' || command == 'LIMPIAR') {
