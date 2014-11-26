@@ -21,18 +21,23 @@ Route::post('conectar',function(){
 	if ($validator->fails()) {
 		echo 'corrige datos';
 	}else{
-	    
+	    $conn = mysqli_connect(Input::get('server'), Input::get('user'), Input::get('password'));
+		if ($conn) {
 			Session::put('server',Input::get('server'));
 			Session::put('user',Input::get('user'));
 			Session::put('password',Input::get('password'));
-		   return Response::json(array('request' => true));
+			return Response::json(array('request' => true));
+		}
+		return Response::json(array('request' => fase));
 
 	}
 
 });
 
 Route::get('/',function(){
-
+	if (Session::has('server')) {
+		return Redirect::to('interfaz');
+	}
 	return View::make('login');
 });
 
@@ -192,7 +197,7 @@ Route::post('consola',function(){
 				if ($conn) {
 					$sql = "DROP DATABASE ".$data[2];
 					if (mysqli_query($conn,$sql)) {
-						return Response::json( array('message' => 'Se Elimino la Tabla <b>'.trim($data[2]).'</b>','type' => 'text-success'));
+						return Response::json( array('message' => 'Se Elimino la base de datos <b>'.trim($data[2]).'</b>','type' => 'text-success'));
 					}else{
 						return Response::json( array('message' => 'Hubo un error al eliminar la base de datos <b>'.$data[2].'</b>','type' => 'text-danger'));
 					}
@@ -237,6 +242,7 @@ Route::post('consola',function(){
 					    $sql = "SHOW TABLES";
 						if ($resultado = mysqli_query($conn,$sql)) {
 							 $tableList = '<ul>';
+
 							 while($cRow = mysqli_fetch_array($resultado))
 							  {
 							  	

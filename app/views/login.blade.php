@@ -51,9 +51,10 @@
                     console.log(data);
                 },
                 success: function(data){
-                    if (data.request = true) {
+                    if (data.request == true) {
                         window.location = '/interfaz';
-                    };
+                    }else{
+                    }
                     //
                     console.log(data);
                 }

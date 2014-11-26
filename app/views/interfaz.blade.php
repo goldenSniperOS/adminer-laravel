@@ -6,6 +6,7 @@
 	{{HTML::style("css/terminal.css")}}
 	{{HTML::style("js/codemirror-4.8/lib/codemirror.css")}}
 	{{HTML::style("js/codemirror-4.8/theme/twilight.css")}}
+	{{HTML::style("js/codemirror-4.8/addon/hint/show-hint.css")}}
 
 @stop
 
@@ -26,18 +27,28 @@
 
 @section('scripts')
 	{{HTML::script("js/codemirror-4.8/lib/codemirror.js")}}
-	{{HTML::script("js/codemirror-4.8/mode/javascript/javascript.js")}}
+	{{HTML::script("js/codemirror-4.8/mode/sql/sql.js")}}
+	{{HTML::script("js/codemirror-4.8/addon/hint/show-hint.js")}}
+	{{HTML::script("js/codemirror-4.8/addon/hint/anyword-hint.js")}}
+	{{HTML::script("js/codemirror-4.8/addon/hint/sql-hint.js")}}
+
 	<script>
 	var dia = new Date();
 	$("#infos").append(dia);
 	var last_command,lines=1;
 	$(".shell-body").append("<li class='text-info'>Conectado a {{Session::get('user')}}&#64;{{Session::get('server')}}</li>");
+	CodeMirror.commands.autocomplete = function(cm) {
+    	CodeMirror.showHint(cm,CodeMirror.hint.sql,{
+    		
+    	});
+  	}
 	var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("command"), {
 	    lineNumbers: true,
-    lineWrapping: true,
-    autofocus: true,
-	    mode: "sql",
-	    theme: 'twilight'
+	    lineWrapping: true,
+	    autofocus: true,
+	    mode: "text/x-mysql",
+	    theme: 'twilight',
+	     extraKeys: {"Ctrl-Space": "autocomplete"}
   	});
 	myCodeMirror.setSize(800, 60);
 	
@@ -76,6 +87,7 @@
     	var command = myCodeMirror.getValue().trim();
     	if (command == 'limpiar' || command == 'LIMPIAR') {
     		$(".shell-body").empty();
+    		$(".shell-body").append("<li class='text-info'>Conectado a {{Session::get('user')}}&#64;{{Session::get('server')}}</li>");
     		command = "";
     		myCodeMirror.setValue("");
     	};
