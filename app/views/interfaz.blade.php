@@ -21,7 +21,7 @@
 		  
 		</ul>
 		<textarea id="command"  name="command" class="form-control" style="resize:none;"></textarea>
-	<button id="send"  class="btn btn-danger form-control">Enviar Comando</button>
+	<button id="send"  class="btn btn-info form-control">Enviar Comando</button>
 	</div>
 @stop	
 
@@ -44,13 +44,11 @@
   	}
 	var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("command"), {
 	    lineNumbers: true,
-	    lineWrapping: true,
-	    autofocus: true,
-	    mode: "text/x-mysql",
+	    mode: "text/x-sql",
 	    theme: 'twilight',
-	     extraKeys: {"Ctrl-Space": "autocomplete"}
+	    extraKeys: {"Ctrl-Space": "autocomplete"},
+        viewportMargin: Infinity
   	});
-	myCodeMirror.setSize(800, 65);
 	
 	$(document).keyup(function (event) {
 	
