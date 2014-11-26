@@ -11,27 +11,30 @@
 |
 */
 
-//Route::get('/', 'HomeController@home');
-
-
 Route::post('conectar',function(){
-	$rules = array();
+
+	//Se Agregaron Validaciones por Backend
+	$rules = array(
+		'server' => 'required',
+		'user' => 'required',
+		);
+
 	$validator = Validator::make(Input::all(), $rules);
 
 	if ($validator->fails()) {
-		echo 'corrige datos';
+		$messages = $validator->messages();
+		return Response::json(array('server' => $messages->first('server'),'user' => $messages->first('user')));
 	}else{
 	    $conn = mysqli_connect(Input::get('server'), Input::get('user'), Input::get('password'));
 		if ($conn) {
 			Session::put('server',Input::get('server'));
 			Session::put('user',Input::get('user'));
-			Session::put('password',Input::get('password'));
+			Session::put('password',Input::get('password'));	
 			return Response::json(array('request' => true));
 		}
-		return Response::json(array('request' => false));
 	}
-
 });
+
 
 Route::get('/',function(){
 	if (Session::has('server')) {
@@ -40,18 +43,12 @@ Route::get('/',function(){
 	return View::make('login');
 });
 
-/*Route::get('interfaz',function(){
-	if (!Session::has('server')) {
-		return Redirect::to('/');
-	}
-	//echo Config::get('config.database_host');
-	return View::make('interfaz');
-});*/
-
 Route::get('cerrar',function(){
 	Session::flush();
 	return Redirect::to('/');
 });
+
+
 Route::post('consola',function(){
 	$tiposcastellano = array(
 	'CADENA' => 'VARCHAR(255)', 
