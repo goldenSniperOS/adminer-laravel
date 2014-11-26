@@ -1,7 +1,7 @@
 .shell-wrap {
   margin: 50px auto 0 auto;
   box-shadow: 0 0 30px rgba(0,0,0,0.4);
-   
+   background: #141414;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;

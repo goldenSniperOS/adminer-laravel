@@ -5,14 +5,12 @@
 	@parent
 	{{HTML::style("css/terminal.css")}}
 	{{HTML::style("js/codemirror-4.8/lib/codemirror.css")}}
+	{{HTML::style("js/codemirror-4.8/theme/twilight.css")}}
+
 @stop
 
 @section('principal')
 
-
-
-		<textarea id="command"  name="command" class="form-control" style="resize:none;"></textarea>
-		<button id="send"  class="btn btn-danger form-control">Enviar Comando</button>
 
 		<a href="/cerrar" class="btn btn-info center-block">Cambiar de conexion</a>
 		<div class="shell-wrap">
@@ -20,6 +18,8 @@
 			<ul class="shell-body">
 			  
 			</ul>
+			<textarea id="command"  name="command" class="form-control" style="resize:none;"></textarea>
+		<button id="send"  class="btn btn-danger form-control">Enviar Comando</button>
 		</div>
 @stop	
 
@@ -29,9 +29,12 @@
 	<script>
 	var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("command"), {
 	    lineNumbers: true,
-	    mode: "sql"
+    styleActiveLine: true,
+    matchBrackets: true,
+	    mode: "sql",
+	    theme: 'twilight'
   	});
-
+	myCodeMirror.setSize(800, 60);
 	var dia = new Date();
 	$("#infos").append(dia);
 	$('#command').keydown(function(e){
