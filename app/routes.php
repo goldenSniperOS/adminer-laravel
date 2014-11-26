@@ -69,20 +69,22 @@ Route::post('consola',function(){
 			switch ($data[1]) {
 				case 'TABLA':
 				case 'tabla':
+					$data[2] = trim($data[2]);
 					$nombres = explode('.',$data[2]);
 					$nombretabla = explode('(',$nombres[1]);
 					Session::put('database',trim($nombretabla[0]));
 					$atributos = explode('(',$val);
 					for ($i=1; $i < count($atributos); $i++) { 
 						$atributos[$i] = str_replace(")", "", $atributos[$i]);
-						$atributos[$i] = trim($atributos[$i]);
-						
+						$atributos[$i] = trim($atributos[$i]);						
 					}
 					$row = explode(",", $atributos[1]);
 					for ($i=0; $i < count($row); $i++) { 
 						$row[$i] = trim($row[$i]);
 						$separa = explode(' ', $row[$i]);
-						if ($row[$i] != "") {
+						if($row[$i] == ""){
+							unset($row[$i]);
+						}else{
 							$row[$i] = $separa[0].' '.$tiposcastellano[strtoupper($separa[1])];
 						}
 					}
@@ -90,24 +92,16 @@ Route::post('consola',function(){
 					if ($conn) {
 					    $sql = "CREATE TABLE ".$nombretabla[0].' (';
 					    	for ($i=0; $i < count($row); $i++) { 
-					    		if ( $row[$i] !="") {
-					    			$sql.= $row[$i];
-						    		if ($i != count($row)-1) {
-						    			$sql.=',';
-						    		}
+				    			$sql.= $row[$i];
+					    		if ($i < count($row)-1) {
+					    			$sql.=',';
 					    		}
-					    		
 					    	}
 					    	$sql = $sql.');';
 						if (mysqli_query($conn,$sql)) {
 							return Response::json( array('message' => 'Se inserto la tabla <b>'.trim($nombretabla[0]).'</b> en la base de datos '.$nombres[0],'type' => 'text-success'));
 						}
 					}
-					/*
-					Schema::create($nombres[1], function($table)
-					{
-						
-					});*/
 				break;
 				case 'BASEDATOS':
 				case 'basedatos':
