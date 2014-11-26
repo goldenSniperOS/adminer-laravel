@@ -50,7 +50,7 @@
 	    theme: 'twilight',
 	     extraKeys: {"Ctrl-Space": "autocomplete"}
   	});
-	myCodeMirror.setSize(800, 60);
+	myCodeMirror.setSize(800, 65);
 	
 	$(document).keyup(function (event) {
 	

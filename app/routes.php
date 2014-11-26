@@ -106,6 +106,8 @@ Route::post('consola',function(){
 						if (mysqli_query($conn,$sql)) {
 							return Response::json( array('message' => 'Se inserto la tabla <b>'.trim($nombretabla[0]).'</b> en la base de datos '.$nombres[0],'type' => 'text-success'));
 						}
+						return Response::json( array('message' => "Hubo un error al insertar la base de datos <b>".$nombretabla[0].'</b> en la base de datos '.$nombres[0],'type' => 'text-danger'));
+						
 					}
 				break;
 				case 'BASEDATOS':
@@ -122,7 +124,7 @@ Route::post('consola',function(){
 						}
 						mysqli_close($conn);
 					}
-					return Response::json(array('message' => 'Especifique <b>Nombre</b> de la base de datos','type' => 'text-danger'));
+					return Response::json(array('message' => 'Especifique <b>NOMBRE</b> de la base de datos','type' => 'text-danger'));
 				break;
 				default:
 					return Response::json(array('message' => 'Usted solo puede <b>CREAR</b> (BASEDATOS o TABLA)','type' => 'text-danger'));
@@ -257,6 +259,32 @@ Route::post('consola',function(){
 			}
 		}
 		return Response::json(array('message' => 'Especifique que desea <b>VER	</b>','type' => 'text-danger'));
+	}
+
+	if ($data[0] == 'ayuda' || $data[0] == 'AYUDA') {
+		$text = '<p>========= Comandos ========</p>
+				<ol>
+					<li><b>CREAR</b>: [BASEDATOS,TABLA]</li>
+					<li><b>VER</b>: [BASEDATOS,TABLAS]</li>
+					
+				</ol>';
+		if (isset($data[1])) {
+			$data[1] = trim($data[1]);
+			switch ($data[1]) {
+				case 'VER':
+				case 'ver':
+					$text = '<p>Comando <b>VER</b></p>
+					<p>Ejemplo: <b>VER BASEDATOS</b> ejemplo</p>';
+					break;
+				case 'CREAR':
+				case 'crear':
+					$text = '<p>Comando <b>CREAR</b></p>
+					<p>Ejemplo: <b>CREAR BASEDATOS</b> ejemplo</p>';
+					break;
+			}
+		}
+		
+		return Response::json(array('message' => $text,'type' => 'text-info'));
 	}
 	return Response::json(array('message' => 'El comando ingresado no es valido','type' => 'text-danger'));
 });
