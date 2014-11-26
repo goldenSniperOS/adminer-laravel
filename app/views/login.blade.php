@@ -52,7 +52,7 @@
                 },
                 success: function(data){
                     if (data.request == true) {
-                        window.location = '/interfaz';
+                        window.location = '/';
                     }else{
                     }
                     //

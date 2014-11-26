@@ -36,18 +36,18 @@ Route::post('conectar',function(){
 
 Route::get('/',function(){
 	if (Session::has('server')) {
-		return Redirect::to('interfaz');
+		return View::make('interfaz');
 	}
 	return View::make('login');
 });
 
-Route::get('interfaz',function(){
+/*Route::get('interfaz',function(){
 	if (!Session::has('server')) {
 		return Redirect::to('/');
 	}
 	//echo Config::get('config.database_host');
 	return View::make('interfaz');
-});
+});*/
 
 Route::get('cerrar',function(){
 	Session::flush();
@@ -68,6 +68,33 @@ Route::post('consola',function(){
 	$data = explode( ' ', $val);
 	$data[0] = trim($data[0]);
 	//return Response::json($row);
+
+	if ($data[0] == 'ayuda' || $data[0] == 'AYUDA'){
+		$text = '<p>========= Comandos ========</p>
+				<ol>
+					<li><b>CREAR</b>: [BASEDATOS,TABLA]</li>
+					<li><b>VER</b>: [BASEDATOS,TABLAS]</li>
+					
+				</ol>';
+		if (isset($data[1])) {
+			$data[1] = trim($data[1]);
+			switch ($data[1]) {
+				case 'VER':
+				case 'ver':
+					$text = '<p>Comando <b>VER</b></p>
+					<p>Ejemplo: <b>VER BASEDATOS</b> ejemplo</p>';
+					break;
+				case 'CREAR':
+				case 'crear':
+					$text = '<p>Comando <b>CREAR</b></p>
+					<p>Ejemplo: <b>CREAR BASEDATOS</b> ejemplo</p>';
+					break;
+			}
+		}
+		
+		return Response::json(array('message' => $text,'type' => 'text-info'));
+	}
+
 	if ($data[0] == 'crear' || $data[0] == 'CREAR') {
 		if (isset($data[1])) {
 			$data[1] = trim($data[1]);
@@ -134,8 +161,7 @@ Route::post('consola',function(){
 		return Response::json(array('message' => 'Especifique que desea <b>CREAR</b>','type' => 'text-danger'));
 	}
 
-	if($data[0] == 'modificar' || $data[0] == 'MODIFICAR')
-	{
+	if ($data[0] == 'modificar' || $data[0] == 'MODIFICAR'){
 		if (isset($data[1])) {
 			$data[1] = trim($data[1]);
 			switch($data[1])
@@ -172,8 +198,7 @@ Route::post('consola',function(){
 		return Response::json(array('message' => 'Especifique que desea <b>MODIFICAR</b>','type' => 'text-danger'));
 	}
 
-	if($data[0] == 'eliminar' || $data[0] == 'ELIMINAR')
-	{
+	if ($data[0] == 'eliminar' || $data[0] == 'ELIMINAR'){
 		switch($data[1])
 		{
 			case 'TABLA':
@@ -213,7 +238,7 @@ Route::post('consola',function(){
 		}
 	}
 
-	if ($data[0] == 'ver' || $data[0] == 'VER') {
+	if ($data[0] == 'ver' || $data[0] == 'VER'){
 		if (isset($data[1])) {
 			$data[1] = trim($data[1]);
 			switch ($data[1]) {
@@ -261,30 +286,39 @@ Route::post('consola',function(){
 		return Response::json(array('message' => 'Especifique que desea <b>VER	</b>','type' => 'text-danger'));
 	}
 
-	if ($data[0] == 'ayuda' || $data[0] == 'AYUDA') {
-		$text = '<p>========= Comandos ========</p>
-				<ol>
-					<li><b>CREAR</b>: [BASEDATOS,TABLA]</li>
-					<li><b>VER</b>: [BASEDATOS,TABLAS]</li>
-					
-				</ol>';
-		if (isset($data[1])) {
-			$data[1] = trim($data[1]);
-			switch ($data[1]) {
-				case 'VER':
-				case 'ver':
-					$text = '<p>Comando <b>VER</b></p>
-					<p>Ejemplo: <b>VER BASEDATOS</b> ejemplo</p>';
-					break;
-				case 'CREAR':
-				case 'crear':
-					$text = '<p>Comando <b>CREAR</b></p>
-					<p>Ejemplo: <b>CREAR BASEDATOS</b> ejemplo</p>';
-					break;
-			}
+	if ($data[0] == 'insertar' || $data[0] == 'INSERTAR'){
+		$nombres = explode('.',$data[1]);
+		$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
+		if ($conn) {
+			$columns = explode('(', $val);
+			$columns[1] = str_replace(")", "", $columns[1]);
+			$columns[1] = str_replace(" ", "", $columns[1]);
+			$col = explode(',', $columns[1]);
+			$sql = "INSERT INTO ".$nombres[1].' (';
+			for ($i=0; $i < count($col); $i++) { 
+				if ($col[$i] == "") {
+					unset($col[$i]);
+				}
+	    	}
+	    	for ($i=0; $i < count($col); $i++) { 
+	    		$sql.= $col[$i];
+	    		if ($i < count($col)-1) {
+	    			$sql.=',';
+	    		}
+	    	}
+	    	$sql = $sql.') VALUES (';
+	    	/*for ($i=0; $i < count($row); $i++) { 
+				$sql.= $row[$i];
+	    		if ($i < count($row)-1) {
+	    			$sql.=',';
+	    		}
+	    	}
+	    	$sql = $sql.');';
+			if (mysqli_query($conn,$sql)) {
+			}*/
+			return Response::json($sql);
 		}
-		
-		return Response::json(array('message' => $text,'type' => 'text-info'));
+
 	}
 	return Response::json(array('message' => 'El comando ingresado no es valido','type' => 'text-danger'));
 });

@@ -124,7 +124,7 @@
 			});
 			$('.shell-body').animate({scrollTop: $('.shell-body').prop("scrollHeight")}, 500);
 		};
-		
+		myCodeMirror.focus();
 	});
 	
 	</script>
