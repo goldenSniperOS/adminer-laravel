@@ -19,6 +19,14 @@ TODO List
 
 
 */
+
+Route::get('prueba',function(){
+
+	
+
+});
+
+
 Route::post('conectar',function(){
 
 	//Se Agregaron Validaciones por Backend
@@ -143,8 +151,7 @@ Route::post('consola',function(){
 						if (mysqli_query($conn,$sql)) {
 							return Response::json( array('message' => 'Se inserto la tabla <b>'.trim($nombretabla[0]).'</b> en la base de datos '.$nombres[0],'type' => 'text-success'));
 						}
-						return Response::json( array('message' => "Hubo un error al insertar la base de datos <b>".$nombretabla[0].'</b> en la base de datos '.$nombres[0],'type' => 'text-danger'));
-						
+						return Response::json( array('message' => "Hubo un error al insertar la base de datos <b>".$nombretabla[0].'</b> en la base de datos '.$nombres[0],'type' => 'text-danger'));						
 					}
 				break;
 				case 'BASEDATOS':
