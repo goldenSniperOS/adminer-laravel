@@ -260,7 +260,7 @@ Route::post('consola',function(){
 				case 'tablas':
 					$data[2] = trim($data[2]);
 					$nombres = explode('.',$data[2]);
- 					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
+ 					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$data[2]);
 					if ($conn) {
 					    $sql = "SHOW TABLES";
 						if ($resultado = mysqli_query($conn,$sql)) {
@@ -277,6 +277,28 @@ Route::post('consola',function(){
 						}
 					}
 				break;
+				case 'COLUMNAS':
+				case 'columnas':
+					$data[2] = trim($data[2]);
+					$nombres = explode('.',$data[2]);
+ 					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
+					if ($conn) {
+					    $sql = "SHOW COLUMNS FROM ".trim($nombres[1]);
+						if ($resultado = mysqli_query($conn,$sql)) {
+							 $tableList = '<ul>';
+
+							 while($cRow = mysqli_fetch_array($resultado))
+							  {
+							  	
+								    $tableList.= '<li>'.$cRow[0].'</li>';
+								
+							  }
+							  $tableList.='</ul>';
+							return Response::json(array('message' => $tableList,'type' => 'text-info'));
+						}
+					}
+				break;
+
 			}
 		}
 		return Response::json(array('message' => 'Especifique que desea <b>VER	</b>','type' => 'text-danger'));
