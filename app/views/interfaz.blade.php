@@ -52,7 +52,8 @@
 
 	$('#send').click(function() {    
     	var command = myCodeMirror.getValue().trim();
-    	if (command == 'limpiar' || command == 'LIMPIAR') {
+    	command = command.toUpperCase();
+    	if (command == 'LIMPIAR') {
     		$(".shell-body").empty();
     		$(".shell-body").append("<li class='text-info'>Conectado a {{Session::get('user')}}&#64;{{Session::get('server')}}</li>");
     		command = "";
