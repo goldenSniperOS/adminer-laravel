@@ -61,27 +61,29 @@ Route::post('consola',function(){
 	'LOGICO' => 'TINYINT',
 	);
 	$val = Input::get('command');
+	//Cadena Completa en mayuscula
+	$val = strtoupper($val);
+
 	$data = explode( ' ', $val);
 	$data[0] = trim($data[0]);
+
 	//return Response::json($row);
 
-	if ($data[0] == 'ayuda' || $data[0] == 'AYUDA'){
+	if ($data[0] == 'AYUDA'){
 		$text = '<p>========= Comandos ========</p>
-				<ol>
-					<li><b>CREAR</b>: [BASEDATOS,TABLA]</li>
-					<li><b>VER</b>: [BASEDATOS,TABLAS]</li>
-					
-				</ol>';
+					<ol>
+						<li><b>CREAR</b>: [BASEDATOS,TABLA]</li>
+						<li><b>VER</b>: [BASEDATOS,TABLAS]</li>
+						
+					</ol>';
 		if (isset($data[1])) {
 			$data[1] = trim($data[1]);
 			switch ($data[1]) {
 				case 'VER':
-				case 'ver':
 					$text = '<p>Comando <b>VER</b></p>
 					<p>Ejemplo: <b>VER BASEDATOS</b> ejemplo</p>';
-					break;
+				break;
 				case 'CREAR':
-				case 'crear':
 					$text = '<p>Comando <b>CREAR</b></p>
 					<p>Ejemplo: <b>CREAR BASEDATOS</b> ejemplo</p>';
 					break;
@@ -91,12 +93,11 @@ Route::post('consola',function(){
 		return Response::json(array('message' => $text,'type' => 'text-info'));
 	}
 
-	if ($data[0] == 'crear' || $data[0] == 'CREAR') {
+	if ($data[0] == 'CREAR') {
 		if (isset($data[1])) {
 			$data[1] = trim($data[1]);
 			switch ($data[1]) {
 				case 'TABLA':
-				case 'tabla':
 					$data[2] = trim($data[2]);
 					$nombres = explode('.',$data[2]);
 					$nombretabla = explode('(',$nombres[1]);
@@ -134,7 +135,6 @@ Route::post('consola',function(){
 					}
 				break;
 				case 'BASEDATOS':
-				case 'basedatos':
 					if(isset($data[2])){
 						$data[2] = trim($data[2]);
 						$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'));
@@ -163,7 +163,6 @@ Route::post('consola',function(){
 			switch($data[1])
 			{
 				case 'TABLA':
-				case 'tabla':
 					$nombres = explode('.',$data[2]);
 					Session::put('database',trim($nombres[0]));
 					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),Session::get('database'));
@@ -198,7 +197,6 @@ Route::post('consola',function(){
 		switch($data[1])
 		{
 			case 'TABLA':
-			case 'tabla':
 				$nombres = explode('.',$data[2]);
 				Session::put('database',trim($nombres[0]));
 				$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),Session::get('database'));
@@ -213,7 +211,6 @@ Route::post('consola',function(){
 				mysqli_close($conn);
 			break;
 			case 'BASEDATOS':
-			case 'basedatos':
 				$nombres = explode('.',$data[2]);
 				Session::put('database',trim($data[2]));
 				$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),Session::get('database')) or die("error");
@@ -239,7 +236,6 @@ Route::post('consola',function(){
 			$data[1] = trim($data[1]);
 			switch ($data[1]) {
 				case 'BASEDATOS':
-				case 'basedatos':
 					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'));
 					if ($conn) {
 					    $sql = "SHOW DATABASES";
@@ -257,7 +253,6 @@ Route::post('consola',function(){
 					}
 					break;
 				case 'TABLAS':
-				case 'tablas':
 					$data[2] = trim($data[2]);
 					$nombres = explode('.',$data[2]);
  					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
@@ -289,7 +284,6 @@ Route::post('consola',function(){
 			$columns = explode('(', $val);
 			$columns[1] = str_replace(")", "", $columns[1]);
 			$columns[1] = str_replace(" ", "", $columns[1]);
-			$columns[1] = str_replace("valores", "", $columns[1]);
 			$columns[1] = str_replace("VALORES", "", $columns[1]);
 			$col = explode(',', $columns[1]);
 			$sql = "INSERT INTO ".$nombres[1].' (';
@@ -305,9 +299,9 @@ Route::post('consola',function(){
 	    		}
 	    	}
 	    	$sql .=') VALUES (';
-	    	$values = explode('VALORES', $val);
+	    	
 	    	if (!isset($values[1])) {
-	    		$values = explode('valores', $val);
+	    		$values = explode('VALORES', $val);
 	    	}
 	    	$values[1] = str_replace("(", "", $values[1]);
 	    	$values[1] = str_replace(")", "", $values[1]);
@@ -333,7 +327,7 @@ Route::post('consola',function(){
 
 	}
 
-	if ($data[0] == 'seleccionar' || $data[0] == 'SELECCIONAR'){
+	if ($data[0] == 'SELECCIONAR'){
 		$nombres = explode('.',$data[1]);
 		$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
 		if ($conn) {
@@ -354,7 +348,6 @@ Route::post('consola',function(){
 	    		}
 	    	}
 	    	$sql .= ' FROM '.$nombres[1].' WHERE ';
-	    	$where = explode('donde', $val);
 	    	if (!isset($where[1])) {
 	    		$where = explode('DONDE', $val);
 	    	}
