@@ -33,8 +33,6 @@
 	{{HTML::script("js/codemirror-4.8/addon/hint/sql-hint.js")}}
 
 	<script>
-	var dia = new Date();
-	$("#infos").append(dia);
 	var last_command,lines=1;
 	$(".shell-body").append("<li class='text-info'>Conectado a {{Session::get('user')}}&#64;{{Session::get('server')}}</li>");
 	CodeMirror.commands.autocomplete = function(cm) {
@@ -52,8 +50,7 @@
 
 	$('#send').click(function() {    
     	var command = myCodeMirror.getValue().trim();
-    	command = command.toUpperCase();
-    	if (command == 'LIMPIAR') {
+    	if (command == 'LIMPIAR' || command == 'limpiar') {
     		$(".shell-body").empty();
     		$(".shell-body").append("<li class='text-info'>Conectado a {{Session::get('user')}}&#64;{{Session::get('server')}}</li>");
     		command = "";
