@@ -67,7 +67,7 @@
 				method:'POST',
 				data:{command:command},
 				beforeSend:function(){
-					$(".shell-body").append("<li id='"+lines+"' class='text-info'>Cargando...</li>");
+					$(".shell-body").append("<li id='"+lines+"' class='text-info'><span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span> Cargando...</li>");
 				},
 				success:function(data){
 					console.log(data);

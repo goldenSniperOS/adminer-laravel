@@ -39,21 +39,27 @@ Route::post('conectar',function(){
 	$rules = array(
 		'server' => 'required',
 		'user' => 'required',
+		'port' => 'required|integer'
 		);
 
 	$validator = Validator::make(Input::all(), $rules);
 
 	if ($validator->fails()) {
 		$messages = $validator->messages();
-		return Response::json(array('server' => $messages->first('server'),'user' => $messages->first('user')));
+		return Response::json(array('request' => false,'message' => $messages->first('user').'<br>'.$messages->first('server').'<br>'.$messages->first('port')));
 	}else{
-	    $conn = mysqli_connect(Input::get('server'), Input::get('user'), Input::get('password'));
-		if ($conn) {
-			Session::put('server',Input::get('server'));
+		try {
+		    $gbd = new PDO('mysql:host='.Input::get('server').';port='.Input::get('port').'', Input::get('user'), Input::get('password'));
+		    Session::put('server',Input::get('server'));
 			Session::put('user',Input::get('user'));
 			Session::put('password',Input::get('password'));	
-			return Response::json(array('request' => true));
+		    $gbd = null;
+		    return Response::json(array('request' => true));
+		} catch (PDOException $e) {
+		    return Response::json(array('request' => false,'message' => $e->getMessage()));
+		    die();
 		}
+	
 	}
 });
 
