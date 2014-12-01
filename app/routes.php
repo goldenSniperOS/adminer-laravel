@@ -254,7 +254,6 @@ Route::post('consola',function(){
 					break;
 				case 'TABLAS':
 					$data[2] = trim($data[2]);
-					$nombres = explode('.',$data[2]);
  					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$data[2]);
 					if ($conn) {
 					    $sql = "SHOW TABLES";
@@ -357,21 +356,30 @@ Route::post('consola',function(){
 			$data = explode("]", $columns[1]);
 			$data[0] = str_replace(" ", "", $data[0]);
 			$col = explode(',', $data[0]);
-			$sql = "SELECT ";
-			for ($i=0; $i < count($col); $i++) { 
-				if ($col[$i] == "") {
-					unset($col[$i]);
-				}
-	    	}
-	    	for ($i=0; $i < count($col); $i++) { 
-	    		$sql.= $col[$i];
-	    		if ($i < count($col)-1) {
-	    			$sql.=',';
-	    		}
-	    	}
+				$sql = "SELECT ";
+			if ($data[0] != '*') {
+				
+				for ($i=0; $i < count($col); $i++) { 
+					if ($col[$i] == "") {
+						unset($col[$i]);
+					}
+		    	}
+		    	for ($i=0; $i < count($col); $i++) { 
+		    		$sql.= $col[$i];
+		    		if ($i < count($col)-1) {
+		    			$sql.=',';
+		    		}
+		    	}
+			}else{
+				$sql.= $data[0];
+			}
+				
 	    	$sql .= ' FROM '.$nombres[1].' WHERE ';
 	    	if (!isset($where[1])) {
 	    		$where = explode('DONDE', $val);
+	    		if (!isset($where[1])) {
+	    			$where = explode('donde', $val);
+	    		}
 	    	}
 	    	$where[1] = trim($where[1]);
 	    	$value = explode(' ', $where[1]);
