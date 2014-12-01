@@ -11,6 +11,28 @@
 |
 */
 
+
+/*
+TODO List
+- Que todos los errores no siempre dirijaan a "Ocurrio un Error" sino salga el error del comando al que Pertenece
+- 
+
+
+*/
+
+Route::get('prueba',function(){
+
+	return View::make('pruebas.prueba');
+});
+
+Route::post('conexionprueba',function(){
+
+	$commando = Input::get('command');
+	return Response::json($commando);
+
+});
+
+
 Route::post('conectar',function(){
 
 	//Se Agregaron Validaciones por Backend
@@ -61,14 +83,22 @@ Route::post('consola',function(){
 	'LOGICO' => 'TINYINT',
 	);
 	$val = Input::get('command');
-	//Cadena Completa en mayuscula
-	$val = strtoupper($val);
-
+	
 	$data = explode( ' ', $val);
+
+
+
+	//Comando Principal a Mayusculas y Sin Espacios
 	$data[0] = trim($data[0]);
+	$data[0] = strtoupper($data[0]);
+
+	//Comando Secundario a Mayusculas y Sin Espacios
+	if(isset($data[1])){
+		$data[1] = trim($data[1]);
+		$data[1] = strtoupper($data[1]);
+	}
 
 	//return Response::json($row);
-
 	if ($data[0] == 'AYUDA'){
 		$text = '<p>========= Comandos ========</p>
 					<ol>
@@ -77,7 +107,6 @@ Route::post('consola',function(){
 						
 					</ol>';
 		if (isset($data[1])) {
-			$data[1] = trim($data[1]);
 			switch ($data[1]) {
 				case 'VER':
 					$text = '<p>Comando <b>VER</b></p>
@@ -88,15 +117,13 @@ Route::post('consola',function(){
 					<p>Ejemplo: <b>CREAR BASEDATOS</b> ejemplo</p>';
 					break;
 			}
-		}
-		
+		}	
 		return Response::json(array('message' => $text,'type' => 'text-info'));
 	}
 
 	if ($data[0] == 'CREAR') {
 		if (isset($data[1])) {
-			$data[1] = trim($data[1]);
-			switch ($data[1]) {
+		switch ($data[1]) {
 				case 'TABLA':
 					$data[2] = trim($data[2]);
 					$nombres = explode('.',$data[2]);
@@ -130,8 +157,7 @@ Route::post('consola',function(){
 						if (mysqli_query($conn,$sql)) {
 							return Response::json( array('message' => 'Se inserto la tabla <b>'.trim($nombretabla[0]).'</b> en la base de datos '.$nombres[0],'type' => 'text-success'));
 						}
-						return Response::json( array('message' => "Hubo un error al insertar la base de datos <b>".$nombretabla[0].'</b> en la base de datos '.$nombres[0],'type' => 'text-danger'));
-						
+						return Response::json( array('message' => "Hubo un error al insertar la base de datos <b>".$nombretabla[0].'</b> en la base de datos '.$nombres[0],'type' => 'text-danger'));						
 					}
 				break;
 				case 'BASEDATOS':
@@ -157,7 +183,7 @@ Route::post('consola',function(){
 		return Response::json(array('message' => 'Especifique que desea <b>CREAR</b>','type' => 'text-danger'));
 	}
 
-	if ($data[0] == 'modificar' || $data[0] == 'MODIFICAR'){
+	if ($data[0] == 'MODIFICAR'){
 		if (isset($data[1])) {
 			$data[1] = trim($data[1]);
 			switch($data[1])
@@ -193,7 +219,7 @@ Route::post('consola',function(){
 		return Response::json(array('message' => 'Especifique que desea <b>MODIFICAR</b>','type' => 'text-danger'));
 	}
 
-	if ($data[0] == 'eliminar' || $data[0] == 'ELIMINAR'){
+	if ($data[0] == 'ELIMINAR'){
 		switch($data[1])
 		{
 			case 'TABLA':
@@ -231,7 +257,7 @@ Route::post('consola',function(){
 		}
 	}
 
-	if ($data[0] == 'ver' || $data[0] == 'VER'){
+	if ($data[0] == 'VER'){
 		if (isset($data[1])) {
 			$data[1] = trim($data[1]);
 			switch ($data[1]) {
@@ -272,7 +298,6 @@ Route::post('consola',function(){
 					}
 				break;
 				case 'COLUMNAS':
-				case 'columnas':
 					$data[2] = trim($data[2]);
 					$nombres = explode('.',$data[2]);
  					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
@@ -298,7 +323,7 @@ Route::post('consola',function(){
 		return Response::json(array('message' => 'Especifique que desea <b>VER	</b>','type' => 'text-danger'));
 	}
 
-	if ($data[0] == 'insertar' || $data[0] == 'INSERTAR'){
+	if ($data[0] == 'INSERTAR'){
 		$nombres = explode('.',$data[1]);
 		$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
 		if ($conn) {
