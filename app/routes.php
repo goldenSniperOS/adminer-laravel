@@ -20,19 +20,6 @@ TODO List
 
 */
 
-Route::get('prueba',function(){
-
-	return View::make('pruebas.prueba');
-});
-
-Route::post('conexionprueba',function(){
-
-	$commando = Input::get('command');
-	return Response::json($commando);
-
-});
-
-
 Route::post('conectar',function(){
 
 	//Se Agregaron Validaciones por Backend
