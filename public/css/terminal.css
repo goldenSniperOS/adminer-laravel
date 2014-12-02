@@ -40,7 +40,7 @@ body{
 }
  
 .shell-body {
-  height:300px;
+  height:400px;
   margin: 0;
   padding: 5px;
   list-style: none;
@@ -70,6 +70,14 @@ body{
   padding: 0 0 0 15px;
 }
 
+.shell-body > li > pre {
+  padding: 0;
+  margin: 0;
+  color: #fff;
+  background: transparent;
+  border: 0;
+}
+
 .CodeMirror {
   width: auto !important;
   height: auto !important;
@@ -95,3 +103,22 @@ body{
     to { transform: scale(1) rotate(360deg);}
 }
  
+ ::-webkit-scrollbar {
+    width: 6px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(49, 176, 213,0.8); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(49, 176, 213,0.7);
+}

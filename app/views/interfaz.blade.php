@@ -72,7 +72,7 @@
 				success:function(data){
 					console.log(data);
 					if (data.message != undefined) {
-						$("#"+lines).html(data.message);
+						$("#"+lines).html('<pre>'+data.message+'</pre>');
 						$("#"+lines).removeAttr('class');
 						$("#"+lines).attr('class', '');
 						$('#'+lines).addClass(data.type);
