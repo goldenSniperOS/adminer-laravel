@@ -80,11 +80,11 @@ Route::get('cerrar',function(){
 
 Route::post('consola',function(){
 	$tiposcastellano = array(
-	'CADENA' => 'VARCHAR(255)', 
+	'CADENA' => 'VARCHAR', 
 	'TEXTO' => 'TEXT', 
 	'ENTERO' => 'INT', 
 	'REAL' => 'FLOAT',
-	'MONEDA' => 'FLOAT(11,2)',
+	'MONEDA' => 'FLOAT',
 	'FECHA' => 'DATE',
 	'HORA' => 'TIME',
 	'LOGICO' => 'TINYINT',
@@ -148,7 +148,7 @@ Route::post('consola',function(){
 						if($row[$i] == ""){
 							unset($row[$i]);
 						}else{
-							$row[$i] = $separa[0].' '.$tiposcastellano[strtoupper($separa[1])];
+							$row[$i] = $separa[0].' '.$tiposcastellano[strtoupper($separa[1])].((isset($separa[2]))?'('.$separa[2].')':'');
 						}
 					}
 					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
@@ -315,7 +315,6 @@ Route::post('consola',function(){
 							  		$table->addRow(array($cRow[0]));
 								
 							  }
-							  $tableList.='';
 							return Response::json(array('message' => $table->getTable(),'type' => 'text-info'));
 						}
 					}
