@@ -47,7 +47,9 @@
 	    extraKeys: {"Ctrl-Space": "autocomplete"},
         viewportMargin: Infinity
   	});
-
+	$(function(){
+		myCodeMirror.focus();
+	});
 	$('#send').click(function() {    
     	var command = myCodeMirror.getValue().trim();
     	if (command == 'LIMPIAR' || command == 'limpiar') {
@@ -72,7 +74,7 @@
 				success:function(data){
 					console.log(data);
 					if (data.message != undefined) {
-						$("#"+lines).html('<pre>'+data.message+'</pre>');
+						$("#"+lines).html(data.message);
 						$("#"+lines).removeAttr('class');
 						$("#"+lines).attr('class', '');
 						$('#'+lines).addClass(data.type);

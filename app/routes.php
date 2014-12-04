@@ -92,14 +92,8 @@ Route::post('consola',function(){
 		$data[1] = strtoupper($data[1]);
 	}
 
-	//return Response::json($row);
 	if ($data[0] == 'AYUDA'){
-		$text = '<p>========= Comandos ========</p>
-					<ol>
-						<li><b>CREAR</b>: [BASEDATOS,TABLA]</li>
-						<li><b>VER</b>: [BASEDATOS,TABLAS]</li>
-						
-					</ol>';
+		$text = '<p>========= Comandos ========</p><ol><li><b>CREAR</b>: [BASEDATOS,TABLA]</li><li><b>VER</b>: [BASEDATOS,TABLAS]</li></ol>';
 		if (isset($data[1])) {
 			switch ($data[1]) {
 				case 'VER':
@@ -270,7 +264,7 @@ Route::post('consola',function(){
 								   $table->addRow(array($cRow[0]));
 								}
 							}
-							return Response::json(array('message' => $table->getTable(),'type' => 'text-info'));
+							return Response::json(array('message' => '<pre>'.$table->getTable().'</pre>','type' => 'text-info'));
 						}
 					}
 					break;
@@ -285,7 +279,7 @@ Route::post('consola',function(){
 						   	{
 								$table->addRow(array($cRow[0]));
 						  	}
-							return Response::json(array('message' => $table->getTable(),'type' => 'text-info'));
+							return Response::json(array('message' => '<pre>'.$table->getTable().'</pre>','type' => 'text-info'));
 						}
 					}
 				break;
@@ -302,7 +296,7 @@ Route::post('consola',function(){
 							  		$table->addRow(array($cRow[0]));
 								
 							  }
-							return Response::json(array('message' => $table->getTable(),'type' => 'text-info'));
+							return Response::json(array('message' => '<pre>'.$table->getTable().'</pre>','type' => 'text-info'));
 						}
 					}
 				break;
@@ -422,7 +416,7 @@ Route::post('consola',function(){
 				if (isset($todo)) {
 					$table->addData($todo);
 				}
-				return Response::json( array('message' => $table->getTable(),'type' => 'text-info'));
+				return Response::json( array('message' => '<pre>'.$table->getTable().'</pre>','type' => 'text-info'));
 			}
 			return Response::json( array('message' => 'Hubo un error al insertar los valores a la tabla <b></b>','type' => 'text-danger'));
 		}
