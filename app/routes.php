@@ -1,5 +1,6 @@
 <?php
 
+include 'Table.php';
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -26,21 +27,27 @@ Route::post('conectar',function(){
 	$rules = array(
 		'server' => 'required',
 		'user' => 'required',
+		'port' => 'required|integer'
 		);
 
 	$validator = Validator::make(Input::all(), $rules);
 
 	if ($validator->fails()) {
 		$messages = $validator->messages();
-		return Response::json(array('server' => $messages->first('server'),'user' => $messages->first('user')));
+		return Response::json(array('request' => false,'message' => $messages->first('user').'<br>'.$messages->first('server').'<br>'.$messages->first('port')));
 	}else{
-	    $conn = mysqli_connect(Input::get('server'), Input::get('user'), Input::get('password'));
-		if ($conn) {
-			Session::put('server',Input::get('server'));
+		try {
+		    $gbd = new PDO('mysql:host='.Input::get('server').';port='.Input::get('port').'', Input::get('user'), Input::get('password'));
+		    Session::put('server',Input::get('server'));
 			Session::put('user',Input::get('user'));
 			Session::put('password',Input::get('password'));	
-			return Response::json(array('request' => true));
+		    $gbd = null;
+		    return Response::json(array('request' => true));
+		} catch (PDOException $e) {
+		    return Response::json(array('request' => false,'message' => $e->getMessage()));
+		    die();
 		}
+	
 	}
 });
 
@@ -60,11 +67,11 @@ Route::get('cerrar',function(){
 
 Route::post('consola',function(){
 	$tiposcastellano = array(
-	'CADENA' => 'VARCHAR(255)', 
+	'CADENA' => 'VARCHAR', 
 	'TEXTO' => 'TEXT', 
 	'ENTERO' => 'INT', 
 	'REAL' => 'FLOAT',
-	'MONEDA' => 'FLOAT(11,2)',
+	'MONEDA' => 'FLOAT',
 	'FECHA' => 'DATE',
 	'HORA' => 'TIME',
 	'LOGICO' => 'TINYINT',
@@ -128,7 +135,7 @@ Route::post('consola',function(){
 						if($row[$i] == ""){
 							unset($row[$i]);
 						}else{
-							$row[$i] = $separa[0].' '.$tiposcastellano[strtoupper($separa[1])];
+							$row[$i] = $separa[0].' '.$tiposcastellano[strtoupper($separa[1])].((isset($separa[2]))?'('.$separa[2].')':'');
 						}
 					}
 					$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
@@ -253,15 +260,17 @@ Route::post('consola',function(){
 					if ($conn) {
 					    $sql = "SHOW DATABASES";
 						if ($resultado = mysqli_query($conn,$sql)) {
-							 $tableList = '<ul>';
-							 while($cRow = mysqli_fetch_array($resultado))
-							  {
-							  	if (($cRow[0]!="information_schema") && ($cRow[0]!="mysql")) {
-								    $tableList.= '<li>'.$cRow[0].'</li>';
+							$table = new Console_Table();
+							while($cRow = mysqli_fetch_array($resultado))
+							{
+							 	if (($cRow[0]!="information_schema") 
+							 		&& ($cRow[0]!="mysql") 
+							 		&& ($cRow[0]!="performance_schema") 
+							 		&& ($cRow[0]!="test")) {
+								   $table->addRow(array($cRow[0]));
 								}
-							  }
-							  $tableList.='</ul>';
-							return Response::json(array('message' => $tableList,'type' => 'text-info'));
+							}
+							return Response::json(array('message' => $table->getTable(),'type' => 'text-info'));
 						}
 					}
 					break;
@@ -271,16 +280,12 @@ Route::post('consola',function(){
 					if ($conn) {
 					    $sql = "SHOW TABLES";
 						if ($resultado = mysqli_query($conn,$sql)) {
-							 $tableList = '<ul>';
-
-							 while($cRow = mysqli_fetch_array($resultado))
-							  {
-							  	
-								    $tableList.= '<li>'.$cRow[0].'</li>';
-								
-							  }
-							  $tableList.='</ul>';
-							return Response::json(array('message' => $tableList,'type' => 'text-info'));
+							$table = new Console_Table();
+							while($cRow = mysqli_fetch_array($resultado))
+						   	{
+								$table->addRow(array($cRow[0]));
+						  	}
+							return Response::json(array('message' => $table->getTable(),'type' => 'text-info'));
 						}
 					}
 				break;
@@ -291,16 +296,13 @@ Route::post('consola',function(){
 					if ($conn) {
 					    $sql = "SHOW COLUMNS FROM ".trim($nombres[1]);
 						if ($resultado = mysqli_query($conn,$sql)) {
-							 $tableList = '<ul>';
-
+							$table = new Console_Table();
 							 while($cRow = mysqli_fetch_array($resultado))
 							  {
-							  	
-								    $tableList.= '<li>'.$cRow[0].'</li>';
+							  		$table->addRow(array($cRow[0]));
 								
 							  }
-							  $tableList.='</ul>';
-							return Response::json(array('message' => $tableList,'type' => 'text-info'));
+							return Response::json(array('message' => $table->getTable(),'type' => 'text-info'));
 						}
 					}
 				break;
@@ -362,7 +364,8 @@ Route::post('consola',function(){
 
 	if ($data[0] == 'SELECCIONAR'){
 		$nombres = explode('.',$data[1]);
-		$conn = mysqli_connect(Session::get('server'), Session::get('user'), Session::get('password'),$nombres[0]);
+		$conn = new PDO('mysql:host='.Session::get('server').';port='.Session::get('port').';dbname='.$nombres[0].'', Session::get('user'), Session::get('password'));
+		    
 		if ($conn) {
 			$columns = explode('[', $val);
 			$data = explode("]", $columns[1]);
@@ -386,38 +389,40 @@ Route::post('consola',function(){
 				$sql.= $data[0];
 			}
 				
-	    	$sql .= ' FROM '.$nombres[1].' WHERE ';
-	    	if (!isset($where[1])) {
-	    		$where = explode('DONDE', $val);
-	    		if (!isset($where[1])) {
-	    			$where = explode('donde', $val);
-	    		}
-	    	}
-	    	$where[1] = trim($where[1]);
-	    	$value = explode(' ', $where[1]);
-	    	for ($i=0; $i < count($value); $i++) { 
-				if ($value[$i] == "") {
-					unset($value[$i]);
-				}
-	    	}
-	    	$sql .= $value[0].$value[1].$value[2];
-			if ($resultado = mysqli_query($conn,$sql)) {
-				 $tableList = '<table class="table"><tr>';
-				for ($i=0; $i < count($col); $i++) { 
-					$tableList.= '<th>'.$col[$i].'</th>';
-				}
-				$tableList .= '</tr>';
-				 while($cRow = mysqli_fetch_array($resultado))
-				{
-					$tableList.= '<tr>'; 
-					for ($i=0; $i < count($col); $i++) { 
-						$tableList .='<td>'.$cRow[$i].'</td>';
+	    	$sql .= ' FROM '.$nombres[1];
+
+    		$where = explode('DONDE', $val);
+    		if (!isset($where[1])) {
+    			$where = explode('donde', $val);
+    		}
+    		if (isset($where[1])) {
+    			$sql.=' WHERE ';
+    			$where[1] = trim($where[1]);
+		    	$value = explode(' ', $where[1]);
+		    	for ($i=0; $i < count($value); $i++) { 
+					if ($value[$i] == "") {
+						unset($value[$i]);
 					}
-					$tableList.='</tr>';
-				
+		    	}
+		    	$sql .= $value[0].$value[1].$value[2];
+		    	
+    		}
+
+			if ($resultado = $conn->query($sql)) {
+				$table = new Console_Table();
+				foreach(range(0, $resultado->columnCount() - 1) as $column_index)
+				{
+				  $meta[] = $resultado->getColumnMeta($column_index)['name'];
 				}
-				$tableList.='</table>';
-				return Response::json( array('message' => $tableList,'type' => 'text-info'));
+				$table->setHeaders($meta);
+				while($cRow = $resultado->fetch(PDO::FETCH_ASSOC))
+				{
+					$todo[] = $cRow;
+				}
+				if (isset($todo)) {
+					$table->addData($todo);
+				}
+				return Response::json( array('message' => $table->getTable(),'type' => 'text-info'));
 			}
 			return Response::json( array('message' => 'Hubo un error al insertar los valores a la tabla <b></b>','type' => 'text-danger'));
 		}

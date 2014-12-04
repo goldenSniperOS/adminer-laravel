@@ -40,14 +40,15 @@ body{
 }
  
 .shell-body {
-  height:300px;
+  height:400px;
+  width: auto;
   margin: 0;
   padding: 5px;
   list-style: none;
   background: #141414;
   font: 1em 'Andale Mono', Consolas, 'Courier New';
   /*line-height: 1.6em;*/
-  overflow-x:hidden;
+  overflow-x:auto;
   overflow-y:auto;
   -webkit-border-bottom-right-radius: 3px;
   -webkit-border-bottom-left-radius: 3px;
@@ -70,6 +71,15 @@ body{
   padding: 0 0 0 15px;
 }
 
+.shell-body > li > pre {
+  padding: 0;
+  margin: 0;
+  color: #fff;
+  background: transparent;
+  border: 0;
+  width: auto;
+}
+
 .CodeMirror {
   width: auto !important;
   height: auto !important;
@@ -77,4 +87,40 @@ body{
 .CodeMirror-scroll {
   overflow-y: hidden !important;
   overflow-x: auto !important;
+}
+
+
+.glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+ 
+ ::-webkit-scrollbar {
+    width: 6px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(49, 176, 213,0.8); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(49, 176, 213,0.7);
 }
