@@ -432,7 +432,9 @@ Route::post('consola',function(){
 				{
 					$todo[] = $cRow;
 				}
-				$table->addData($todo);
+				if (isset($todo)) {
+					$table->addData($todo);
+				}
 				return Response::json( array('message' => $table->getTable(),'type' => 'text-info'));
 			}
 			return Response::json( array('message' => 'Hubo un error al insertar los valores a la tabla <b></b>','type' => 'text-danger'));
