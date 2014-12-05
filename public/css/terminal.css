@@ -85,7 +85,7 @@ html, body{
 .help{
   color: #31343c;
   background: #fff;
-  float: left;
+  position: relative;
   height: 100%
 }
 .help > h4.title{
@@ -93,24 +93,36 @@ html, body{
   color: #fff;
   text-transform: uppercase;
   margin: 0;
+  text-align: center;
   padding: 13px 0 13px 13px;
   width: 100%;
   border-bottom: 5px solid #53b2e5;
 }
 .help > .help-body{
+  overflow-x:hidden;
+  overflow-y: auto;
+  position: absolute;
   height: 87%;
 }
 .help .padding{
   padding: 5px;
+  text-align: justify;
 }
 .help > .help-body > ul > li{
   font-weight: bold;
 }
+.help > .help-body  h4{
+  padding: 0;
+  margin: 6;
+}
 .help-send{
-  position: fixed;
-  right: 0;
-  z-index: 100;
-  bottom: 10px;
+  position: absolute;
+  max-width: 220px; 
+  bottom: 0;
+}
+.help-send,.help-send > a{
+  font-size: 10px;
+  text-align: center;
 }
 .help-send > button{
   border-radius: 0;
@@ -124,7 +136,11 @@ html, body{
   overflow-y: hidden !important;
   overflow-x: auto !important;
 }
-
+pre.CodeMirror-placeholder {
+  color: #333 !important;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 12px !important;
+}
 .glyphicon-refresh-animate {
     -animation: spin .7s infinite linear;
     -webkit-animation: spin2 .7s infinite linear;
@@ -167,7 +183,7 @@ blockquote{
   padding: 5px;
 }
 .list-group{
-
+  margin: 0;
 }
 .list-group-item:first-child,.list-group-item:last-child{
   border-radius: 0;

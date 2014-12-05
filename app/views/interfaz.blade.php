@@ -15,15 +15,26 @@
 	<div class="content">
 		<div class="help">
 			<h4 class="title">Adminer
-			<small>v 2.1</small></h4>
+			<small>v 2.0</small></h4>
 			<div class="help-body">
-				<p class="padding">Aqui obtendras la ayuda para usar todos los comandos.</p>
+				<p class="padding"><small>Aquí obtendrás la ayuda para usar todos los comandos.</small></p>
 				<div class="list-group">
 				  <a href="#" class="list-group-item"><i class="fa fa-angle-double-right"></i> Crear</a>
-				  <a href="#" class="list-group-item">Morbi leo risus</a>
-				  <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-				  <a href="#" class="list-group-item">Vestibulum at eros</a>
+				  <a href="#" class="list-group-item"><i class="fa fa-angle-double-right"></i> Seleccionar</a>
+				  <a href="#" class="list-group-item"><i class="fa fa-angle-double-right"></i> Insertar</a>
+				  <a href="#" class="list-group-item"><i class="fa fa-angle-double-right"></i> Modificar</a>
+				  <a href="#" class="list-group-item"><i class="fa fa-angle-double-right"></i> Eliminar</a>
+				  <a href="#" class="list-group-item"><i class="fa fa-angle-double-right"></i> Ver</a>
 				</div>
+
+				<div class="padding">
+					<h4><i class="fa fa-angle-double-right"></i> Teclado</h4>
+					<p><code>CTRL + S</code>: <small>Permite guardar los comandos.</small></p>
+					<p><code>CTRL + Espacio</code>: <small>Muestra la lista de comandos.</small></p>
+				</div>
+			</div>
+			<div class="padding help-send">
+				<a href=""><i class="fa fa-github"></i> Proyecto</a> Por <b>White Elephant Team</b>
 			</div>
 			
 		</div>
@@ -42,7 +53,7 @@
 				<button id="send" class="btn btn-success"><i class="fa fa-flask"></i> Enviar Comando</button>
 			</div>
 			<div class="shell-input">
-				<textarea id="command"  name="command" class="form-control" style="resize:none;"></textarea>
+				<textarea id="command"  name="command" class="form-control" style="resize:none;" placeholder="Para ejecutar comandos usa CTRL + S"></textarea>
 			</div>
 		</div>
 		
@@ -56,6 +67,7 @@
 	{{HTML::script("js/codemirror-4.8/addon/hint/anyword-hint.js")}}
 	{{HTML::script("js/codemirror-4.8/addon/hint/sql-hint.js")}}
 	{{HTML::script("js/typed.js")}}
+	{{HTML::script("js/placeholder.js")}}
 
 	<script>
 	var last_command,lines=1;
@@ -74,7 +86,6 @@
 		            enviar_comando(); //function called when 'ctrl+s' is used when instance is in focus
 		    },
 		},
-        viewportMargin: Infinity
   	});
   	function enviar_comando(){
   		var command = myCodeMirror.getValue().trim();
