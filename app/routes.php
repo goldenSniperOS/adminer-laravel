@@ -155,7 +155,7 @@ Route::post('consola',function(){
 						if ($conn) {
 						    $sql = "CREATE DATABASE ".$data[2];
 							if (mysqli_query($conn,$sql)) {
-								return Response::json( array('message' => "Se inserto la base de datos <b>".trim($data[2]).'</b>','type' => 'text-success'));
+								return Response::json( array('message' => "Se creó la base de datos <b>".trim($data[2]).'</b>','type' => 'text-success'));
 							}
 							return Response::json( array('message' => "Hubo un error al insertar la base de datos <b>".$data[2].'</b>','type' => 'text-danger'));
 						}
@@ -401,7 +401,6 @@ Route::post('consola',function(){
 		    	$sql .= $value[0].$value[1].$value[2];
 		    	
     		}
-
 			if ($resultado = $conn->query($sql)) {
 				$table = new Console_Table();
 				foreach(range(0, $resultado->columnCount() - 1) as $column_index)

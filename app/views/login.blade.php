@@ -39,7 +39,6 @@
                 </div>
             </div>
             <button class="btn btn-lg btn-primary btn-block btn-success" type="submit">Iniciar Sesión</button>
-            <hr>
 {{Form::close()}}
 @stop
 
