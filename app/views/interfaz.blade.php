@@ -38,7 +38,7 @@
 				
 			</ul>
 
-			<div class="help-send">
+			<div class="help-send hide">
 				<button id="send" class="btn btn-success"><i class="fa fa-flask"></i> Enviar Comando</button>
 			</div>
 			<div class="shell-input">
@@ -68,27 +68,16 @@
 	    lineNumbers: true,
 	    mode: "text/x-sql",
 	    theme: 'twilight',
-	    extraKeys: {"Ctrl-Space": "autocomplete"},
+	    extraKeys: {
+	    	"Ctrl-Space": "autocomplete",
+			"Ctrl-S": function(cm) {
+		            enviar_comando(); //function called when 'ctrl+s' is used when instance is in focus
+		    },
+		},
         viewportMargin: Infinity
   	});
-	$(function(){
-		$('#send').fadeOut('show');
-		 $("#title").typed({
-	        strings: ["First sentence.", "Second sentence."],
-	        typeSpeed: 0
-	      });
-		myCodeMirror.focus();
-	});
-	$(document).on('keyup',function(){
-		var command = myCodeMirror.getValue().trim();
-		if (command != "") {
-    		$('#send').fadeIn('show');
-		}else{
-			$('#send').fadeOut('show');
-		}
-	});
-	$('#send').click(function() {    
-    	var command = myCodeMirror.getValue().trim();
+  	function enviar_comando(){
+  		var command = myCodeMirror.getValue().trim();
     	if (command == 'LIMPIAR' || command == 'limpiar') {
     		$(".shell-body").empty();
     		command = "";
@@ -127,11 +116,17 @@
 				}
 			});
 			$('.shell-body').animate({scrollTop: $('.shell-body').prop("scrollHeight")}, 500);
-		}else{
-			
 		};
 		myCodeMirror.focus();
+  	};
+	$(function(){
+		 $("#title").typed({
+	        strings: ["First sentence.", "Second sentence."],
+	        typeSpeed: 0
+	      });
+		myCodeMirror.focus();
 	});
+	
 	
 	</script>
 @stop
